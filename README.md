@@ -2,114 +2,124 @@
 
 ## Overview
 
-This project is a **production-grade Retrieval-Augmented Generation (RAG) assistant** built using:
+This is a production-grade Retrieval-Augmented Generation (RAG) assistant built using:
 
 - Hugging Face LLMs
-- LangChain for chaining & prompt management
+- LangChain for chaining and prompt management
 - FastAPI backend
 - FAISS for vector-based document retrieval
-- Config-ready structure for cloud deployment
+- Config-based structure for local or cloud deployment
 
-The goal is to simulate an **internal GenAI copilot** (e.g., for Walmart) that can answer associate queries by retrieving accurate context from internal policy documents and generating concise, trustworthy responses.
+The goal is to simulate an internal GenAI copilot (for example, in an enterprise like Walmart) that can answer associate queries by retrieving relevant context from internal documents and generating accurate, grounded responses.
 
----
+## Problem Statement
 
-The problem:
-Typical LLMs (like ChatGPT or GPT-4) are not connected to your personal PDFs or textboo
+Large language models like ChatGPT or GPT-4 are not connected to your internal files (PDFs, textbooks, or company policies). As a result, they may generate incorrect or hallucinated answers because they do not have access to the real content.
 
-ks. They may give wrong answers or hallucinate because they don’t have access to the real content.
+This assistant solves that by:
 
-This app solves that by:
+- Reading and embedding your uploaded documents
+- Identifying what type of question the user is asking (document-related or general)
+- Returning answers grounded in those documents, or using a general LLM if appropriate
 
-Reading and understanding your uploaded books using a search system.
-Detecting what kind of question you're asking (e.g., general or document-based).
-Giving accurate answers by combining a smart search (RAG) with a language model (LLM).
+## Key Features
 
-## What is BERT (Used for Intent Detection)
-BERT is a type of neural network that understands the meaning of a sentence.
+- Semantic search through uploaded documents using FAISS
+- Query classification using BERT (to route between GPT and RAG)
+- RAG pipeline that combines document retrieval and generation
+- FastAPI backend with REST APIs
+- Optional Streamlit frontend for simple UI testing
 
-In this project, we use BERT to classify the type of your question:
-Is it about the uploaded book? → Route to the document system (RAG).
-Is it a general question like “What is AI?” → Use a general LLM (GPT).
+## How It Works
 
-## What is RAG ?
-RAG = Search + Generate
+1. You upload PDFs or documents
+2. The system embeds them using a vector store (FAISS)
+3. When a question is asked:
+   - It classifies if the query should use RAG (document-based) or GPT (general)
+   - If document-based: it retrieves relevant content using vector similarity
+   - It then generates a grounded response using the retrieved context
 
-It combines:
-Search through your uploaded books using vector similarity (like how Google finds pages).
-Generate an answer using a language model (like GPT) with the search results.
+## What is BERT Used For
+
+BERT is a type of model used to understand language. In this project, it is used for intent classification. It decides whether the user's query should be answered using document search (RAG) or a general model (GPT).
+
+## What is RAG (Retrieval-Augmented Generation)
+
+RAG combines search and generation:
+
+- It retrieves relevant chunks from documents using vector similarity
+- Then it uses a language model to generate a response based on those chunks
 
 Example:
 You ask: “What is PCA?”
-The system searches for PCA in the book.
-It gives those pages to GPT to write a clear answer, based only on your book.
--------------------------------------
-## Project Structure
+The system finds pages from your document that mention PCA, and then generates an answer based on them.
 
 
--------------------------------------
 ## Local Setup Instructions
 
-### Project Bootstrap
-1. Clone the repo (or navigate to project root):
-   cd ~/Desktop/llm_rag_assistant
+### 1. Clone the repository
 
-2. Create a virtual environment:
-   python3 -m venv venv
+git clone git@github.com:minapnh0/llm_rag_assistant.git
+cd llm_rag_assistant
 
-3. Activate the virtual environment:
-   - On Mac/Linux:
-     source venv/bin/activate
-   - On Windows:
-     .\venv\Scripts\activate
+### 2. Create a virtual environment
 
-4. Install all dependencies:
-   pip install -r requirements.txt
+python3 -m venv venv
 
-5. Create .env file in the project root:
-   Add the following entries:
-   HUGGINGFACE_API_TOKEN=your_token_here
-   MODEL_ID=google/flan-t5-base
-   EMBEDDING_MODEL=all-MiniLM-L6-v2
+### 3. Activate the virtual environment
 
-6. Add mock documents to:
-   data/mock_docs/
+On Mac/Linux:
+source venv/bin/activate
 
--------------------------------------
+On Windows:
+.\venv\Scripts\activate
+
+### 4. Install dependencies
+
+pip install -r requirements.txt
+
+### 5. Set up environment variables
+
+Create a `.env` file in the project root:
+
+HUGGINGFACE_API_TOKEN=your_token_here  
+MODEL_ID=google/flan-t5-base  
+EMBEDDING_MODEL=all-MiniLM-L6-v2
+
+### 6. Add mock documents
+
+Put your test PDFs in:
+
+data/mock_docs/
 
 ## Running the Application
 
-## Run backend
-### Run with Uvicorn (Dev Mode):
-   uvicorn app.main:app --reload
-   uvicorn app.main:app --host 127.0.0.1 --port 8000
+### Run the FastAPI backend (Development mode)
 
-# In another terminal, run UI
+uvicorn app.main:app --reload
+
+This starts the server at http://127.0.0.1:8000  
+API documentation is available at http://127.0.0.1:8000/docs
+
+### Run the Streamlit frontend (optional UI)
+
 streamlit run ui/app_ui.py
 
-- Server will start at: http://127.0.0.1:8000
-- API documentation auto-generated at: http://127.0.0.1:8000/docs
+### Run in Production Mode (Gunicorn)
 
--------------------------------------
-
-### Run with Gunicorn (Production Mode)
-
-(Optional for deployment testing)
+(Optional for deployment)
 
 1. Install Gunicorn:
-   pip install gunicorn
 
-2. Run with 4 workers:
-   gunicorn -w 4 -b 0.0.0.0:8080 --preload app.main:app
+pip install gunicorn
 
--------------------------------------
+2. Run with multiple workers:
+
+gunicorn -w 4 -b 0.0.0.0:8080 --preload app.main:app
 
 ## Developer Notes
 
-- Embeddings will be managed via app/embedder.py using FAISS
-- RAG flow is built in app/rag_engine.py
-- Prompt templates can be versioned in app/prompt_templates.py
-- Logging and tracing hooks can be added under logs/
-
-pip install -r requirements.txt
-# llm_rag_assistant
+- FAISS index creation and embeddings are handled in `app/embedder/`
+- RAG orchestration logic is in `app/rag/rag_service.py`
+- Prompt formatting and templates can be adjusted in `app/prompt_templates.py`
+- Request logging and traceability are handled in `app/utils/logger_utils.py`
