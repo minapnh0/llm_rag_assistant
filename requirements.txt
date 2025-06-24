@@ -1,0 +1,42 @@
+# === Web App ===
+fastapi==0.110.1
+uvicorn[standard]==0.29.0
+
+# === LangChain Core + Agents (latest) ===
+langchain==0.1.17
+langchain-community==0.0.36
+langchainhub==0.1.14
+
+# === Vector DB ===
+faiss-cpu==1.7.4
+
+# === Embeddings and LLMs ===
+huggingface-hub==0.23.2
+transformers==4.41.1
+sentence-transformers==2.7.0
+
+# === SQL + Agent Tools ===
+pandas==2.2.2
+sqlalchemy==2.0.30
+
+# === Matplotlib ===
+matplotlib==3.8.4
+
+# === Document Loading ===
+pypdf==3.17.4
+PyMuPDF==1.24.2
+unstructured==0.14.2
+
+# === Utility ===
+python-dotenv==1.0.1
+tqdm==4.66.4
+typing-extensions==4.12.0
+loguru==0.7.2
+
+# === Embeddings and LLMs ===
+openai==0.28.1
+
+
+# === UI ===
+streamlit==1.35.0
+

@@ -1,0 +1,62 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env/
+.envrc
+*.env
+*.secrets
+
+# MacOS metadata
+.DS_Store
+
+# VS Code settings
+.vscode/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# FAISS index + vectorstore cache
+data/faiss_index/
+data/vectorstore/
+
+# LangChain & HuggingFace caches
+.cache/
+huggingface_cache/
+~/.cache/huggingface
+~/.cache/torch
+
+# Model binaries / safetensors / large files
+*.bin
+*.safetensors
+*.pt
+
+# Logs and trace files
+*.log
+*.trace
+logs/
+
+# Test artifacts
+htmlcov/
+coverage.xml
+pytest_cache/
+.tox/
+.nox/
+
+# mypy, pyright, etc.
+.mypy_cache/
+.pytype/
+.pyre/
+
+# Compiled C extensions
+*.so
+
+# Pydantic/Config JSON
+config/*.json
+
+# OpenAI API key backups
+openai_api_key.txt
+secrets.json
